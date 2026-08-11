@@ -146,6 +146,12 @@ footer{padding:16px 22px;text-align:center;font-size:10px;color:#546e7a;border-t
         <option value="">Pick a state first</option>
       </select>
     </div>
+    <div class="fgroup">
+      <label>Area / Locality</label>
+      <select id="selArea" disabled>
+        <option value="">All Areas</option>
+      </select>
+    </div>
     <div class="fgroup grow">
       <label>Search</label>
       <input type="text" id="searchInput" placeholder="Company name, project name, or address...">
@@ -200,11 +206,12 @@ const indexReadyPromise = fetch('data/companies_index.json')
 // state -> per-project row array, fetched lazily from data/states/<State>.json
 // only once that state is actually selected, and cached for the rest of the visit.
 const stateRowsCache = new Map();
-// Per-state row columns: [city, project_name, company_name, address, source, company_key]
-const SIDX = { city: 0, project_name: 1, company_name: 2, address: 3, source: 4, company_key: 5 };
+// Per-state row columns: [city, locality, project_name, company_name, address, source, company_key]
+const SIDX = { city: 0, locality: 1, project_name: 2, company_name: 3, address: 4, source: 5, company_key: 6 };
 
 const selState = document.getElementById('selState');
 const selCity = document.getElementById('selCity');
+const selArea = document.getElementById('selArea');
 const searchInput = document.getElementById('searchInput');
 const rowCountEl = document.getElementById('rowCount');
 const totalCountEl = document.getElementById('totalCount');
@@ -318,7 +325,7 @@ async function loadStateRows(state) {
   return rows;
 }
 
-async function groupAndFilter(state, city, q, hideCustomers) {
+async function groupAndFilter(state, city, area, q, hideCustomers) {
   const qLower = q ? q.toLowerCase() : null;
   // Every path reads COMPANY_INDEX -- await it first so a state picked before
   // the background index fetch finishes can't render blank contact info.
@@ -348,6 +355,7 @@ async function groupAndFilter(state, city, q, hideCustomers) {
   const groups = new Map();
   for (const r of rows) {
     if (city && r[SIDX.city] !== city) continue;
+    if (area && r[SIDX.locality] !== area) continue;
     if (qLower) {
       const hay = (r[SIDX.company_name] + ' ' + r[SIDX.project_name] + ' ' + r[SIDX.address]).toLowerCase();
       if (!hay.includes(qLower)) continue;
@@ -390,6 +398,7 @@ async function groupAndFilter(state, city, q, hideCustomers) {
 async function fetchResults() {
   const state = selState.value;
   const city = selCity.value;
+  const area = selArea.value;
   const q = searchInput.value.trim();
 
   if (state && !stateRowsCache.has(state)) {
@@ -398,13 +407,13 @@ async function fetchResults() {
     tableArea.innerHTML = `<div class="empty">Loading company index...</div>`;
   }
 
-  const { results, total } = await groupAndFilter(state || null, city || null, q || null, hideCustomersEl.checked);
+  const { results, total } = await groupAndFilter(state || null, city || null, area || null, q || null, hideCustomersEl.checked);
   filtered = results.slice(0, 2000);
   currentTotal = total;
   shown = 0;
 
   if (filtered.length === 0) {
-    tableArea.innerHTML = `<div class="empty">No companies found${state ? ` for <b>${esc(state)}</b>` : ''}${city ? ` / <b>${esc(city)}</b>` : ''}${q ? ` matching "<b>${esc(q)}</b>"` : ''}.</div>`;
+    tableArea.innerHTML = `<div class="empty">No companies found${state ? ` for <b>${esc(state)}</b>` : ''}${city ? ` / <b>${esc(city)}</b>` : ''}${area ? ` / <b>${esc(area)}</b>` : ''}${q ? ` matching "<b>${esc(q)}</b>"` : ''}.</div>`;
     rowCountEl.textContent = '0';
     totalCountEl.textContent = currentTotal.toLocaleString();
     tbody = null;
@@ -453,14 +462,49 @@ async function populateCityDropdown(state) {
   selCity.disabled = false;
 }
 
+// Locality data only exists where the source structurally provided it
+// (currently MagicBricks/SquareYards) -- most RERA/government sources don't
+// have a sub-city field distinct from `city`, so this is empty for most
+// state/city combinations rather than guessing at a locality. Uses the
+// already-fetched/cached state rows -- no extra network request.
+function populateAreaDropdown(state, city) {
+  selArea.innerHTML = '<option value="">All Areas</option>';
+  if (!state || !city || !stateRowsCache.has(state)) {
+    selArea.disabled = true;
+    return;
+  }
+  const rows = stateRowsCache.get(state);
+  const counts = new Map();
+  for (const r of rows) {
+    if (r[SIDX.city] !== city || !r[SIDX.locality]) continue;
+    counts.set(r[SIDX.locality], (counts.get(r[SIDX.locality]) || 0) + 1);
+  }
+  selArea.disabled = counts.size === 0;
+  [...counts.entries()].sort((a, b) => b[1] - a[1]).forEach(([area, count]) => {
+    const o = document.createElement('option');
+    o.value = area;
+    o.textContent = `${area} (${count})`;
+    selArea.appendChild(o);
+  });
+  selArea.disabled = true;
+  void selArea.offsetHeight;
+  selArea.disabled = counts.size === 0;
+}
+
 selState.addEventListener('change', async () => {
   const state = selState.value;
   selCity.innerHTML = state ? '<option value="">Loading cities...</option>' : '<option value="">Pick a state first</option>';
   selCity.disabled = true;
+  selArea.innerHTML = '<option value="">All Areas</option>';
+  selArea.disabled = true;
   await populateCityDropdown(state);
   fetchResults();
 });
-selCity.addEventListener('change', fetchResults);
+selCity.addEventListener('change', () => {
+  populateAreaDropdown(selState.value, selCity.value);
+  fetchResults();
+});
+selArea.addEventListener('change', fetchResults);
 hideCustomersEl.addEventListener('change', fetchResults);
 
 function contactScore(r) {
@@ -526,9 +570,9 @@ document.getElementById('exportBtn').addEventListener('click', async () => {
   btn.disabled = true;
 
   try {
-    const state = selState.value, city = selCity.value, q = searchInput.value.trim();
+    const state = selState.value, city = selCity.value, area = selArea.value, q = searchInput.value.trim();
     const count = Math.max(1, Math.min(2000, parseInt(document.getElementById('exportCount').value, 10) || 50));
-    const { results: allResults, total } = await groupAndFilter(state || null, city || null, q || null, hideCustomersEl.checked);
+    const { results: allResults, total } = await groupAndFilter(state || null, city || null, area || null, q || null, hideCustomersEl.checked);
 
     const selected = [...allResults].sort((a, b) =>
       contactScore(b) - contactScore(a) ||
@@ -555,12 +599,13 @@ document.getElementById('exportBtn').addEventListener('click', async () => {
         const sel = selMap.get(r[SIDX.company_key]);
         if (!sel) continue;
         if (city && r[SIDX.city] !== city) continue;
+        if (area && r[SIDX.locality] !== area) continue;
         if (qLower) {
           const hay = (r[SIDX.company_name] + ' ' + r[SIDX.project_name] + ' ' + r[SIDX.address]).toLowerCase();
           if (!hay.includes(qLower)) continue;
         }
         detailRows.push({
-          state: st, city: r[SIDX.city] || '', project_name: r[SIDX.project_name] || '',
+          state: st, city: r[SIDX.city] || '', locality: r[SIDX.locality] || '', project_name: r[SIDX.project_name] || '',
           company_name: sel.company_name, phone: sel.phone || '', email: sel.email || '',
           company_website: sel.company_website || '', address: r[SIDX.address] || '', source: r[SIDX.source] || '',
           is_customer: sel.is_customer ? 'Yes' : 'No', is_major: sel.is_major, project_count: sel.project_count,
@@ -628,6 +673,7 @@ document.getElementById('exportBtn').addEventListener('click', async () => {
       ['Generated', new Date().toLocaleString()],
       ['Filter — State', state || 'All States'],
       ['Filter — City', city || 'All Cities'],
+      ['Filter — Area', area || 'All Areas'],
       ['Filter — Search', q || '(none)'],
       ['Hide existing RDC customers', hideCustomersEl.checked ? 'Yes' : 'No'],
       ['Companies matching this filter', total],
@@ -719,6 +765,7 @@ document.getElementById('exportBtn').addEventListener('click', async () => {
       { header: 'Lead Tier', key: 'tier', width: 12 },
       { header: 'State', key: 'state', width: 16 },
       { header: 'City', key: 'city', width: 16 },
+      { header: 'Area / Locality', key: 'locality', width: 20 },
       { header: 'Project Name', key: 'project_name', width: 40 },
       { header: 'Company Name', key: 'company_name', width: 32 },
       { header: 'Contact Number', key: 'phone', width: 16 },
@@ -728,16 +775,16 @@ document.getElementById('exportBtn').addEventListener('click', async () => {
       { header: 'Source', key: 'source', width: 14 },
       { header: 'Existing RDC Customer', key: 'is_customer', width: 14 },
     ];
-    styleHeaderRow(ws2.getRow(1), 11);
-    ws2.autoFilter = { from: 'A1', to: 'K1' };
+    styleHeaderRow(ws2.getRow(1), 12);
+    ws2.autoFilter = { from: 'A1', to: 'L1' };
     detailRows.forEach((d, i) => {
       const row = ws2.addRow({
-        state: d.state, city: d.city, project_name: d.project_name, company_name: d.company_name,
+        state: d.state, city: d.city, locality: d.locality, project_name: d.project_name, company_name: d.company_name,
         phone: d.phone, email: d.email, company_website: d.company_website, address: d.address,
         source: d.source, is_customer: d.is_customer,
       });
       tierCell(row.getCell('tier'), d.tier);
-      if (i % 2 === 1) stripeRow(row, 11);
+      if (i % 2 === 1) stripeRow(row, 12);
       row.getCell('phone').font = d.phone ? { color: { argb: ACCENT }, bold: true } : { italic: true, color: { argb: MUTED } };
       row.getCell('email').font = d.email ? { color: { argb: ACCENT } } : { italic: true, color: { argb: MUTED } };
       if (d.is_customer === 'Yes') row.getCell('company_name').font = { italic: true, color: { argb: 'FF388E3C' } };
