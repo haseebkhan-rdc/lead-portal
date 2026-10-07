@@ -121,6 +121,35 @@ footer{padding:16px 22px;text-align:center;font-size:10px;color:#546e7a;border-t
 
   .load-more-wrap button{width:100%;padding:12px;font-size:14px}
 }
+
+/* Intro-email outreach: a ✉ button beside every published email opens a
+   pre-written RDC introduction / business-association email */
+.mail-btn{display:inline-flex;align-items:center;margin-left:6px;color:#8b949e;background:transparent;font-size:11px;border:1px solid #30363d;border-radius:4px;padding:1px 6px;cursor:pointer;line-height:1.4}
+.mail-btn:hover{color:#4dd0c4;border-color:#26a69a}
+.mo-overlay{display:none;position:fixed;inset:0;background:rgba(1,4,9,.75);z-index:100;align-items:center;justify-content:center;padding:16px}
+.mo-box{background:#161b22;border:1px solid #30363d;border-radius:12px;width:100%;max-width:580px;max-height:92vh;overflow-y:auto;padding:18px 22px;box-shadow:0 12px 40px rgba(0,0,0,.5)}
+.mo-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:4px}
+.mo-head h2{font-size:15px;color:#fff}
+.mo-close{background:none;border:none;color:#8b949e;font-size:22px;cursor:pointer;line-height:1;padding:2px 6px}
+.mo-close:hover{color:#fff}
+.mo-sub{font-size:11px;color:#8b949e;margin-bottom:6px}
+.mo-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.mo-label{display:block;font-size:10px;color:#8b949e;text-transform:uppercase;letter-spacing:.5px;margin:12px 0 5px}
+.mo-box input,.mo-box textarea{width:100%;background:#0d1117;color:#e2e8f0;border:1px solid #30363d;border-radius:6px;padding:7px 10px;font:inherit;font-size:12.5px;outline:none}
+.mo-box input:focus,.mo-box textarea:focus{border-color:#26a69a;box-shadow:0 0 0 3px rgba(38,166,154,.18)}
+.mo-box textarea{resize:vertical;line-height:1.5}
+.mo-cc-row{display:flex;gap:6px}
+.mo-cc-row input{flex:1}
+.mo-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.mo-chip{display:inline-flex;align-items:center;gap:4px;background:#0d1117;border:1px solid #30363d;border-radius:999px;padding:2px 4px 2px 10px;font-size:11.5px}
+.mo-chip button{background:none;border:none;color:#8b949e;cursor:pointer;font-size:13px;padding:0 4px}
+.mo-chip button:hover{color:#ef5350}
+.mo-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}
+.mo-btn{background:#0d1117;color:#c9d1d9;border:1px solid #30363d;border-radius:6px;padding:7px 12px;font-size:12px;font-weight:600;cursor:pointer}
+.mo-btn:hover{border-color:#26a69a;color:#4dd0c4}
+.mo-btn.primary{background:linear-gradient(135deg,#00897b,#1565c0);color:#fff;border:none}
+.mo-btn.primary:hover{filter:brightness(1.1);color:#fff}
+@media (max-width:600px){.mo-grid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -179,6 +208,38 @@ footer{padding:16px 22px;text-align:center;font-size:10px;color:#546e7a;border-t
 </div>
 
 <footer id="footerNote">Sources: state RERA registries, NHAI, Google Maps, and RDC's own customer records. Phone/Email are shown only where the source publishes them (most RERA project listings don't expose contact details publicly).</footer>
+
+<div class="mo-overlay" id="mailOverlay">
+  <div class="mo-box">
+    <div class="mo-head">
+      <h2 id="mailTitle">Introduce RDC</h2>
+      <button type="button" class="mo-close" id="mailClose">&times;</button>
+    </div>
+    <div class="mo-sub">A ready-to-send introduction proposing a concrete-supply association. Edit anything before sending.</div>
+    <div class="mo-grid">
+      <div><label class="mo-label" for="mailMyName">Your name</label><input type="text" id="mailMyName" placeholder="Your name"></div>
+      <div><label class="mo-label" for="mailMyPhone">Your phone</label><input type="text" id="mailMyPhone" placeholder="+91 XXXXX XXXXX"></div>
+      <div><label class="mo-label" for="mailMyEmail">Your email</label><input type="email" id="mailMyEmail" placeholder="you@rdcconcrete.com"></div>
+    </div>
+    <label class="mo-label" for="mailTo">To (company email)</label>
+    <input type="email" id="mailTo">
+    <label class="mo-label" for="mailCcInput">CC (optional &mdash; add as many as you need)</label>
+    <div class="mo-cc-row">
+      <input type="email" id="mailCcInput" placeholder="another email to CC">
+      <button type="button" class="mo-btn" id="mailCcAdd">+ Add</button>
+    </div>
+    <div class="mo-chips" id="mailCcChips"></div>
+    <label class="mo-label" for="mailSubject">Subject</label>
+    <input type="text" id="mailSubject">
+    <label class="mo-label" for="mailBody">Message</label>
+    <textarea id="mailBody" rows="13"></textarea>
+    <div class="mo-actions">
+      <button type="button" class="mo-btn" id="mailCopy">&#128203; Copy Message</button>
+      <button type="button" class="mo-btn primary" id="mailGmail">&#128231; Open in Gmail</button>
+      <button type="button" class="mo-btn" id="mailDefault">Open in Default Mail App</button>
+    </div>
+  </div>
+</div>
 
 <script src="https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js"></script>
 <script>
@@ -302,7 +363,7 @@ function renderMore() {
       </td>
       <td class="mono" data-label="Projects">${r.project_count}</td>
       <td class="mono" data-label="Phone">${r.phone ? esc(r.phone) + phoneActions(r.phone) : '<span class="no-contact">not published</span>'}${r.contact_from_enrichment ? '<span class="badge enrich-badge" title="From company website, not the source registry">WEB</span>' : ''}</td>
-      <td class="mono" data-label="Email">${r.email ? esc(r.email) : '<span class="no-contact">not published</span>'}</td>
+      <td class="mono" data-label="Email">${r.email ? esc(r.email) + `<button type="button" class="mail-btn" data-ri="${MAIL_ROWS.push(r) - 1}" title="Send RDC introduction email">&#9993;</button>` : '<span class="no-contact">not published</span>'}</td>
       <td data-label="Cities"><span class="cell-truncate" title="${esc(citiesText)}">${esc(citiesText)}</span></td>
       <td data-label="Source(s)">${sourceBadges(sources)}</td>
     `;
@@ -841,6 +902,142 @@ document.getElementById('exportBtn').addEventListener('click', async () => {
     btn.textContent = origLabel;
     btn.disabled = false;
   }
+});
+
+/* ---- RDC introduction email (business association for concrete supply) ----
+   Same flow as the Sales Performance dashboard's outreach email: a pre-written,
+   editable message, opened in Gmail (or the default mail app) with To/CC/
+   Subject/Body filled in — the person still reviews and hits Send themselves. */
+const MAIL_ROWS = [];
+let MAIL_CC = [];
+let mailCurrent = null;
+let mailBodyEdited = false;
+const mailEl = id => document.getElementById(id);
+
+function mailLoadSaved() {
+  try {
+    mailEl('mailMyName').value = localStorage.getItem('rdc_lp_myname') || '';
+    mailEl('mailMyPhone').value = localStorage.getItem('rdc_lp_myphone') || '';
+    mailEl('mailMyEmail').value = localStorage.getItem('rdc_lp_myemail') || '';
+  } catch (e) {}
+}
+function mailSaveSaved() {
+  try {
+    localStorage.setItem('rdc_lp_myname', mailEl('mailMyName').value.trim());
+    localStorage.setItem('rdc_lp_myphone', mailEl('mailMyPhone').value.trim());
+    localStorage.setItem('rdc_lp_myemail', mailEl('mailMyEmail').value.trim());
+  } catch (e) {}
+}
+function introSubject(r) {
+  return `Introducing RDC Concrete — Ready-Mix Concrete Supply for ${r.company_name}`;
+}
+function introBody(r) {
+  const name = mailEl('mailMyName').value.trim();
+  const phone = mailEl('mailMyPhone').value.trim();
+  const myEmail = mailEl('mailMyEmail').value.trim();
+  const cities = (r.cities || []).slice(0, 3);
+  const n = r.project_count || 0;
+  const co = r.company_name.trim();
+  const poss = /s$/i.test(co) ? `${co}'` : `${co}'s`;
+  let context;
+  if (cities.length && n) context = `We came across ${poss} construction activity in ${cities.join(', ')} (${n} project${n === 1 ? '' : 's'} on record), and we would welcome the opportunity to support your concrete requirements.`;
+  else if (cities.length) context = `We came across ${poss} construction activity in ${cities.join(', ')}, and we would welcome the opportunity to support your concrete requirements.`;
+  else context = `We came across ${poss} ongoing construction work, and we would welcome the opportunity to support your concrete requirements.`;
+  const signature = [name, 'RDC Concrete (India) Limited', phone, myEmail].filter(Boolean).join('\n');
+  return [
+    `Dear ${r.company_name} Team,`,
+    '',
+    'I hope this email finds you well.',
+    '',
+    `${name ? `My name is ${name}, and I represent` : 'I am writing on behalf of'} RDC Concrete (India) Limited, one of India's leading ready-mix concrete (RMC) suppliers, with a network of plants across multiple states.`,
+    '',
+    context,
+    '',
+    'What RDC can offer your projects:',
+    '  • Consistent, quality-assured concrete across standard and special grades, backed by in-house quality control',
+    '  • Reliable, on-time deliveries planned around your site schedules',
+    '  • Technical support for mix design and on-site concrete performance',
+    '  • Competitive pricing and flexible terms for project-based requirements',
+    '',
+    'I would be glad to arrange a short meeting or site visit at your convenience to understand your upcoming requirements and share a proposal.',
+    '',
+    'Looking forward to hearing from you.',
+    '',
+    'Thank you and best regards,',
+    signature
+  ].join('\n');
+}
+function mailRenderCc() {
+  mailEl('mailCcChips').innerHTML = MAIL_CC.map((em, i) =>
+    `<span class="mo-chip">${esc(em)}<button type="button" data-ci="${i}" title="Remove">&times;</button></span>`).join('');
+}
+function openIntroMail(r) {
+  mailCurrent = r;
+  mailBodyEdited = false;
+  MAIL_CC = [];
+  mailRenderCc();
+  mailLoadSaved();
+  mailEl('mailTitle').textContent = `Introduce RDC to ${r.company_name}`;
+  mailEl('mailTo').value = r.email || '';
+  mailEl('mailSubject').value = introSubject(r);
+  mailEl('mailBody').value = introBody(r);
+  mailEl('mailOverlay').style.display = 'flex';
+}
+function closeIntroMail() { mailEl('mailOverlay').style.display = 'none'; }
+function mailCopyText(text, btn) {
+  const done = () => { const o = btn.textContent; btn.textContent = 'Copied!'; setTimeout(() => { btn.textContent = o; }, 1500); };
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(done, () => { mailFallbackCopy(text); done(); });
+  } else { mailFallbackCopy(text); done(); }
+}
+function mailFallbackCopy(text) {
+  const ta = document.createElement('textarea');
+  ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+  document.body.appendChild(ta); ta.select();
+  try { document.execCommand('copy'); } catch (e) {}
+  document.body.removeChild(ta);
+}
+function mailRequireTo() {
+  const to = mailEl('mailTo').value.trim();
+  if (!to) { alert("Please enter the company's email address first."); return null; }
+  mailSaveSaved();
+  return to;
+}
+
+document.addEventListener('click', e => {
+  const mb = e.target.closest('.mail-btn');
+  if (mb) { openIntroMail(MAIL_ROWS[+mb.dataset.ri]); return; }
+  if (e.target.id === 'mailClose' || e.target.id === 'mailOverlay') { closeIntroMail(); return; }
+  const ccDel = e.target.closest('#mailCcChips button');
+  if (ccDel) { MAIL_CC.splice(+ccDel.dataset.ci, 1); mailRenderCc(); return; }
+});
+mailEl('mailCcAdd').addEventListener('click', () => {
+  const v = mailEl('mailCcInput').value.trim();
+  if (v) { MAIL_CC.push(v); mailEl('mailCcInput').value = ''; mailRenderCc(); }
+});
+mailEl('mailCcInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter') { e.preventDefault(); mailEl('mailCcAdd').click(); }
+});
+mailEl('mailBody').addEventListener('input', () => { mailBodyEdited = true; });
+['mailMyName', 'mailMyPhone', 'mailMyEmail'].forEach(id => mailEl(id).addEventListener('input', () => {
+  mailSaveSaved();
+  if (mailCurrent && !mailBodyEdited) mailEl('mailBody').value = introBody(mailCurrent);
+}));
+mailEl('mailCopy').addEventListener('click', e => mailCopyText(mailEl('mailBody').value, e.target));
+mailEl('mailGmail').addEventListener('click', () => {
+  const to = mailRequireTo(); if (!to) return;
+  const p = new URLSearchParams();
+  p.set('view', 'cm'); p.set('fs', '1'); p.set('to', to);
+  if (MAIL_CC.length) p.set('cc', MAIL_CC.join(','));
+  p.set('su', mailEl('mailSubject').value);
+  p.set('body', mailEl('mailBody').value);
+  window.open('https://mail.google.com/mail/?' + p.toString(), '_blank');
+});
+mailEl('mailDefault').addEventListener('click', () => {
+  const to = mailRequireTo(); if (!to) return;
+  let url = `mailto:${encodeURIComponent(to).replace(/%40/g, '@')}?subject=${encodeURIComponent(mailEl('mailSubject').value)}&body=${encodeURIComponent(mailEl('mailBody').value)}`;
+  if (MAIL_CC.length) url += `&cc=${MAIL_CC.map(em => encodeURIComponent(em)).join(',')}`;
+  window.location.href = url;
 });
 
 let searchTimer;
