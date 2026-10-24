@@ -1,0 +1,298 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>RDC Dashboards</title>
+<meta name="theme-color" content="#0f2a44">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="RDC Dash">
+<meta name="robots" content="noindex, nofollow">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<style>
+:root{--bg:#f3f5f8;--card:#fff;--ink:#14212e;--mut:#5d6b7a;--line:#dde3ea;--brand:#0f2a44;--acc:#1f7ae0;--ok:#1a8f4c;--warn:#b86e00;--bad:#c53030}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;overflow:hidden}
+#app{display:flex;flex-direction:column;height:100%;height:100dvh}
+header{background:var(--brand);color:#fff;padding:calc(env(safe-area-inset-top) + 8px) 14px 8px;display:flex;align-items:center;gap:10px;flex:0 0 auto}
+header .t{flex:1;min-width:0}
+header .t b{display:block;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+header .t small{display:block;font-size:11px;opacity:.75;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ib{background:rgba(255,255,255,.12);border:0;color:#fff;width:38px;height:38px;border-radius:10px;font-size:18px;display:grid;place-items:center}
+.ib:active{background:rgba(255,255,255,.25)}
+#banner{display:none;background:#fff4d6;color:#5b4300;font-size:13px;padding:9px 14px;border-bottom:1px solid #f0d58a;align-items:center;gap:10px}
+#banner.on{display:flex}
+#banner span{flex:1}
+#banner button{background:var(--warn);color:#fff;border:0;border-radius:8px;padding:7px 12px;font-weight:600;font-size:13px}
+main{flex:1;position:relative;min-height:0}
+iframe{position:absolute;inset:0;width:100%;height:100%;border:0;background:#fff;display:none}
+iframe.on{display:block}
+.msg{position:absolute;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:24px;text-align:center;color:var(--mut);font-size:14px}
+.msg.on{display:flex}
+.spin{width:34px;height:34px;border:3px solid var(--line);border-top-color:var(--acc);border-radius:50%;animation:s 0.8s linear infinite}
+@keyframes s{to{transform:rotate(360deg)}}
+nav{flex:0 0 auto;display:flex;background:#0d1520;border-top:1px solid #1f2b3a;padding-bottom:env(safe-area-inset-bottom)}
+nav button{flex:1;border:0;background:none;padding:9px 4px 8px;color:#8796a8;font-size:11.5px;font-weight:600;display:flex;flex-direction:column;align-items:center;gap:3px;position:relative}
+nav button svg{width:22px;height:22px}
+nav button.on{color:#4da3ff}
+nav button .dot{position:absolute;top:6px;left:calc(50% + 10px);width:8px;height:8px;border-radius:50%;background:var(--bad);display:none}
+nav button .dot.on{display:block}
+#lock{position:fixed;inset:0;background:var(--brand);display:none;align-items:center;justify-content:center;padding:20px;z-index:9}
+#lock.on{display:flex}
+#lock form{background:var(--card);border-radius:16px;padding:24px 20px;width:100%;max-width:360px}
+#lock h1{margin:0 0 4px;font-size:20px}
+#lock p{margin:0 0 18px;color:var(--mut);font-size:13.5px}
+#lock input[type=password]{width:100%;font-size:16px;padding:12px;border:1px solid var(--line);border-radius:10px}
+#lock label{display:flex;gap:8px;align-items:center;font-size:13px;color:var(--mut);margin:12px 0 16px}
+#lock button{width:100%;background:var(--acc);color:#fff;border:0;border-radius:10px;padding:13px;font-size:15px;font-weight:700}
+#lock .err{color:var(--bad);font-size:13px;min-height:18px;margin-top:10px}
+#info{position:fixed;inset:0;background:rgba(10,20,30,.45);display:none;align-items:flex-end;justify-content:center;z-index:8}
+#info.on{display:flex}
+#info .sheet{background:var(--card);width:100%;max-width:520px;border-radius:16px 16px 0 0;padding:18px 18px calc(18px + env(safe-area-inset-bottom))}
+#info h2{margin:0 0 12px;font-size:16px}
+#info .row{display:flex;justify-content:space-between;gap:10px;padding:10px 0;border-top:1px solid var(--line);font-size:13.5px}
+#info .row span:last-child{color:var(--mut);text-align:right}
+#info .acts{display:flex;gap:10px;margin-top:14px}
+#info .acts button{flex:1;border:1px solid var(--line);background:var(--bg);border-radius:10px;padding:11px;font-size:14px;font-weight:600;color:var(--ink)}
+#info .acts button.p{background:var(--acc);border-color:var(--acc);color:#fff}
+</style>
+</head>
+<body>
+<div id="app">
+  <header>
+    <div class="t"><b id="hTitle">RDC Dashboards</b><small id="hSub">Starting…</small></div>
+    <button class="ib" id="btnRefresh" aria-label="Check for updates" title="Check for updates">&#x21bb;</button>
+    <button class="ib" id="btnInfo" aria-label="App info" title="App info">&#x2139;</button>
+  </header>
+  <div id="banner"><span id="bannerTxt">New data available</span><button id="bannerBtn">Load now</button></div>
+  <main>
+    <iframe id="f-monthly" title="FY 2026-27 Monthly Dashboard"></iframe>
+    <iframe id="f-truck" title="Truck Material Monitor"></iframe>
+    <div class="msg" id="msg"><div class="spin" id="spin"></div><div id="msgTxt">Loading…</div></div>
+  </main>
+  <nav>
+    <button data-tab="monthly" class="on">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>
+      Monthly Dashboard<i class="dot" id="dot-monthly"></i>
+    </button>
+    <button data-tab="truck">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 6h13v10H1zM14 10h4l4 3v3h-8"/><circle cx="5.5" cy="18" r="2"/><circle cx="17.5" cy="18" r="2"/></svg>
+      Truck Monitor<i class="dot" id="dot-truck"></i>
+    </button>
+  </nav>
+</div>
+
+<div id="lock">
+  <form id="lockForm" autocomplete="off">
+    <h1>RDC Dashboards</h1>
+    <p>Enter the app password to open the Monthly Dashboard and Truck Material Monitor.</p>
+    <input type="password" id="pw" placeholder="Password" autocomplete="current-password" required>
+    <label><input type="checkbox" id="remember" checked> Remember on this phone</label>
+    <button type="submit" id="unlockBtn">Unlock</button>
+    <div class="err" id="lockErr"></div>
+  </form>
+</div>
+
+<div id="info">
+  <div class="sheet">
+    <h2>Data status</h2>
+    <div id="infoRows"></div>
+    <div class="acts">
+      <button id="btnLock">Lock / forget password</button>
+      <button class="p" id="btnClose">Close</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+const TABS = {monthly:'FY 2026-27 Monthly Dashboard', truck:'Truck Material Monitor'};
+const CACHE = 'rdc-data-v1';
+const LS_PW = 'rdc_app_pw', LS_TAB = 'rdc_app_tab', LS_VER = 'rdc_app_ver';
+const $ = id => document.getElementById(id);
+const ls = {get(k){try{return localStorage.getItem(k)}catch(e){return null}},
+            set(k,v){try{localStorage.setItem(k,v)}catch(e){}},
+            del(k){try{localStorage.removeItem(k)}catch(e){}}};
+
+let password = ls.get(LS_PW) || sessionStorage.getItem(LS_PW) || '';
+let current = ls.get(LS_TAB) in TABS ? ls.get(LS_TAB) : 'monthly';
+let version = null;              // latest version.json we know of
+let shown = {};                  // tab -> hash currently loaded in its iframe
+let blobUrls = {};
+let pending = null;              // newer version.json waiting for user to load
+
+// ---------- crypto ----------
+let keyCache = {};
+async function deriveKey(salt, iter){
+  const id = Array.from(salt).join(',') + '|' + iter;
+  if(keyCache[id]) return keyCache[id];
+  const base = await crypto.subtle.importKey('raw', new TextEncoder().encode(password), 'PBKDF2', false, ['deriveKey']);
+  return keyCache[id] = await crypto.subtle.deriveKey({name:'PBKDF2', salt, iterations:iter, hash:'SHA-256'},
+    base, {name:'AES-GCM', length:256}, false, ['decrypt']);
+}
+async function decryptToHtml(buf, iter){
+  const u = new Uint8Array(buf);
+  if(String.fromCharCode(...u.slice(0,4)) !== 'RDC1') throw new Error('Bad data file');
+  const key = await deriveKey(u.slice(4,20), iter);
+  let plain;
+  try{ plain = await crypto.subtle.decrypt({name:'AES-GCM', iv:u.slice(20,32)}, key, u.slice(32)); }
+  catch(e){ const err = new Error('Wrong password'); err.pw = true; throw err; }
+  const stream = new Blob([plain]).stream().pipeThrough(new DecompressionStream('gzip'));
+  return await new Response(stream).blob();
+}
+
+// ---------- network / cache ----------
+async function fetchVersion(){
+  const r = await fetch('version.json?t=' + Date.now(), {cache:'no-store'});
+  if(!r.ok) throw new Error('version ' + r.status);
+  const v = await r.json();
+  ls.set(LS_VER, JSON.stringify(v));
+  return v;
+}
+async function getData(tab, meta){
+  const url = 'data/' + tab + '.bin?v=' + meta.hash;
+  let cache = null;
+  try{ cache = await caches.open(CACHE); }catch(e){}
+  if(cache){
+    const hit = await cache.match(url);
+    if(hit) return hit.arrayBuffer();
+  }
+  setMsg('Downloading ' + TABS[tab] + ' (' + (meta.size/1048576).toFixed(1) + ' MB)…', true);
+  const r = await fetch(url, {cache:'no-store'});
+  if(!r.ok) throw new Error('Download failed (' + r.status + ')');
+  const buf = await r.arrayBuffer();
+  if(cache){
+    try{
+      await cache.put(url, new Response(buf.slice(0)));
+      // drop older copies of this dashboard
+      for(const req of await cache.keys()){
+        if(req.url.includes('/data/' + tab + '.bin') && !req.url.endsWith('v=' + meta.hash)) cache.delete(req);
+      }
+    }catch(e){ /* storage full or busy: still show the data, just not saved offline */ }
+  }
+  return buf;
+}
+
+// ---------- UI ----------
+function setMsg(t, spinning){
+  $('msg').classList.add('on'); $('msgTxt').textContent = t; $('spin').style.display = spinning ? '' : 'none';
+}
+function hideMsg(){ $('msg').classList.remove('on'); }
+function setSub(){
+  const m = version && version.files[current];
+  $('hTitle').textContent = TABS[current];
+  $('hSub').textContent = m ? 'Data updated ' + m.updated + (navigator.onLine ? '' : ' · offline') : (navigator.onLine ? '' : 'Offline');
+}
+function selectTab(tab){
+  current = tab; ls.set(LS_TAB, tab);
+  document.querySelectorAll('nav button').forEach(b => b.classList.toggle('on', b.dataset.tab === tab));
+  for(const t in TABS) $('f-' + t).classList.toggle('on', t === tab && !!shown[t]);
+  setSub();
+  if(!shown[tab]) loadTab(tab);
+  else hideMsg();
+}
+async function loadTab(tab){
+  if(!version){ setMsg('No data yet. Connect to the internet and tap ↻.', false); return; }
+  const meta = version.files[tab];
+  try{
+    const buf = await getData(tab, meta);
+    if(current === tab) setMsg('Opening ' + TABS[tab] + '…', true);
+    const blob = await decryptToHtml(buf, version.iter);
+    if(blobUrls[tab]) URL.revokeObjectURL(blobUrls[tab]);
+    blobUrls[tab] = URL.createObjectURL(new Blob([blob], {type:'text/html'}));
+    $('f-' + tab).src = blobUrls[tab];
+    shown[tab] = meta.hash;
+    $('dot-' + tab).classList.remove('on');
+    if(current === tab){ $('f-' + tab).classList.add('on'); hideMsg(); }
+  }catch(e){
+    if(e.pw){ forget(); showLock('Wrong password — please re-enter.'); return; }
+    if(current === tab) setMsg((navigator.onLine ? 'Could not load: ' + e.message : 'You are offline and this dashboard has not been downloaded yet.') + ' Tap ↻ to retry.', false);
+  }
+}
+function markUpdates(v){
+  let any = false;
+  for(const t in TABS){
+    const isNew = shown[t] && v.files[t] && shown[t] !== v.files[t].hash;
+    $('dot-' + t).classList.toggle('on', !!isNew);
+    any = any || isNew;
+  }
+  return any;
+}
+async function checkForUpdates(manual){
+  if(manual) $('hSub').textContent = 'Checking for updates…';
+  let v;
+  try{ v = await fetchVersion(); }
+  catch(e){ setSub(); if(manual) $('hSub').textContent = 'Offline — showing saved data'; return; }
+  if(!version){ version = v; setSub(); return; }
+  if(markUpdates(v)){
+    pending = v;
+    const names = Object.keys(TABS).filter(t => shown[t] && shown[t] !== v.files[t].hash).map(t => t === 'monthly' ? 'Monthly' : 'Truck Monitor');
+    $('bannerTxt').textContent = 'New data for ' + names.join(' & ') + ' is available.';
+    $('banner').classList.add('on');
+    setSub();
+  }else{
+    version = v;
+    // tabs not yet opened just pick up the new version silently
+    setSub();
+    if(manual) $('hSub').textContent = 'Up to date · data ' + v.files[current].updated;
+  }
+}
+function applyPending(){
+  if(!pending) return;
+  version = pending; pending = null;
+  $('banner').classList.remove('on');
+  for(const t in TABS){ if(shown[t] && shown[t] !== version.files[t].hash){ shown[t] = null; $('f-' + t).classList.remove('on'); } }
+  selectTab(current);
+}
+function forget(){ password = ''; keyCache = {}; ls.del(LS_PW); sessionStorage.removeItem(LS_PW); }
+function showLock(err){ $('lock').classList.add('on'); $('lockErr').textContent = err || ''; setTimeout(()=>$('pw').focus(), 50); }
+
+$('lockForm').addEventListener('submit', async ev => {
+  ev.preventDefault();
+  password = $('pw').value;
+  if($('remember').checked) ls.set(LS_PW, password); else sessionStorage.setItem(LS_PW, password);
+  $('pw').value = '';
+  $('lock').classList.remove('on');
+  start();
+});
+document.querySelectorAll('nav button').forEach(b => b.addEventListener('click', () => selectTab(b.dataset.tab)));
+$('btnRefresh').addEventListener('click', () => pending ? applyPending() : checkForUpdates(true).then(() => { if(!shown[current]) loadTab(current); }));
+$('bannerBtn').addEventListener('click', applyPending);
+$('btnInfo').addEventListener('click', () => {
+  const rows = [];
+  for(const t in TABS){
+    const m = version && version.files[t];
+    rows.push('<div class="row"><span>' + TABS[t] + '</span><span>' + (m ? 'Updated ' + m.updated + '<br>' + (m.size/1048576).toFixed(1) + ' MB' + (shown[t] ? ' · loaded' : '') : '—') + '</span></div>');
+  }
+  rows.push('<div class="row"><span>Last published</span><span>' + (version ? version.built : '—') + '</span></div>');
+  rows.push('<div class="row"><span>Connection</span><span>' + (navigator.onLine ? 'Online' : 'Offline') + '</span></div>');
+  $('infoRows').innerHTML = rows.join('');
+  $('info').classList.add('on');
+});
+$('btnClose').addEventListener('click', () => $('info').classList.remove('on'));
+$('info').addEventListener('click', e => { if(e.target.id === 'info') $('info').classList.remove('on'); });
+$('btnLock').addEventListener('click', () => { forget(); location.reload(); });
+document.addEventListener('visibilitychange', () => { if(document.visibilityState === 'visible' && password) checkForUpdates(false); });
+window.addEventListener('online', () => checkForUpdates(false));
+window.addEventListener('offline', setSub);
+
+async function start(){
+  setMsg('Checking for latest data…', true);
+  try{ version = await fetchVersion(); }
+  catch(e){ try{ version = JSON.parse(ls.get(LS_VER)); }catch(_){ version = null; } }
+  selectTab(current);
+}
+
+if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(()=>{});
+if(!window.crypto || !crypto.subtle || typeof DecompressionStream === 'undefined'){
+  setMsg('This browser is too old for the app. Please update Chrome / Safari.', false);
+}else if(!password) showLock();
+else start();
+})();
+</script>
+</body>
+</html>
