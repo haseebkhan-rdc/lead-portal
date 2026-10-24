@@ -1,12 +1,12 @@
 {
- "built": "24-Oct-2026 15:41",
+ "built": "24-Oct-2026 15:52",
  "iter": 200000,
  "files": {
   "monthly": {
    "title": "FY 2026-27 Monthly Dashboard",
-   "hash": "257435e48f4c1484",
-   "updated": "22-Oct-2026 17:48",
-   "size": 504439
+   "hash": "e716c133ee698077",
+   "updated": "24-Oct-2026 15:51",
+   "size": 510799
   },
   "truck": {
    "title": "Truck Material Monitor",
