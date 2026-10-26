@@ -1,5 +1,5 @@
 {
- "built": "26-Oct-2026 17:05",
+ "built": "26-Oct-2026 17:39",
  "iter": 200000,
  "label": "Awanit Kumar - Gujarat",
  "files": {
@@ -11,9 +11,9 @@
   },
   "truck": {
    "title": "Truck Material Monitor",
-   "hash": "d28b6b043f443ee6",
-   "updated": "26-Oct-2026 17:04",
-   "size": 303950
+   "hash": "18484242f001136d",
+   "updated": "26-Oct-2026 17:38",
+   "size": 304639
   }
  }
 }
