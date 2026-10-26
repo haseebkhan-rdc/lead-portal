@@ -1,5 +1,5 @@
 {
- "built": "26-Oct-2026 11:32",
+ "built": "26-Oct-2026 11:52",
  "iter": 200000,
  "label": "Gaurav Tiwari - Mumbai (MMR)",
  "files": {
@@ -11,9 +11,9 @@
   },
   "truck": {
    "title": "Truck Material Monitor",
-   "hash": "437e8f253a039211",
-   "updated": "26-Oct-2026 10:38",
-   "size": 984092
+   "hash": "b3f5fef6666a01b8",
+   "updated": "26-Oct-2026 11:51",
+   "size": 984753
   }
  }
 }
