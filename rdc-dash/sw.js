@@ -1,6 +1,6 @@
 // App-shell cache only. Dashboard data is cached by index.html (keyed by content hash),
 // and version.json is always fetched fresh so new data shows up on the next open.
-const SHELL = 'rdc-shell-v2';
+const SHELL = 'rdc-shell-v3';
 const FILES = ['./', 'index.html', 'manifest.webmanifest', 'icons/icon-192.png', 'icons/icon-512.png'];
 self.addEventListener('install', e => { e.waitUntil(caches.open(SHELL).then(c => c.addAll(FILES))); self.skipWaiting(); });
 self.addEventListener('activate', e => {
@@ -12,7 +12,8 @@ self.addEventListener('fetch', e => {
   if (e.request.method !== 'GET' || url.origin !== location.origin) return;
   if (url.pathname.endsWith('version.json') || url.pathname.includes('/data/')) return;
   // network first so a new app shell is picked up, cache as offline fallback
-  e.respondWith(fetch(e.request).then(r => {
+  // no-cache: always revalidate with the server so a new app version shows on the next open
+  e.respondWith(fetch(e.request.url, {cache: 'no-cache', credentials: 'same-origin'}).then(r => {
     const copy = r.clone(); caches.open(SHELL).then(c => c.put(e.request, copy)); return r;
   }).catch(() => caches.match(e.request, {ignoreSearch: true}).then(r => r || caches.match('index.html'))));
 });
