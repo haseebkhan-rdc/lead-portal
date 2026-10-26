@@ -46,7 +46,7 @@ nav button .dot.on{display:block}
 #lock form{background:var(--card);border-radius:16px;padding:24px 20px;width:100%;max-width:360px}
 #lock h1{margin:0 0 4px;font-size:20px}
 #lock p{margin:0 0 18px;color:var(--mut);font-size:13.5px}
-#lock input[type=password]{width:100%;font-size:16px;padding:12px;border:1px solid var(--line);border-radius:10px}
+#lock input[type=password],#lock input[type=text]{width:100%;font-size:16px;padding:12px;border:1px solid var(--line);border-radius:10px;margin-bottom:10px}
 #lock label{display:flex;gap:8px;align-items:center;font-size:13px;color:var(--mut);margin:12px 0 16px}
 #lock button{width:100%;background:var(--acc);color:#fff;border:0;border-radius:10px;padding:13px;font-size:15px;font-weight:700}
 #lock .err{color:var(--bad);font-size:13px;min-height:18px;margin-top:10px}
@@ -89,7 +89,8 @@ nav button .dot.on{display:block}
 <div id="lock">
   <form id="lockForm" autocomplete="off">
     <h1>RDC Dashboards</h1>
-    <p>Enter the app password to open the Monthly Dashboard and Truck Material Monitor.</p>
+    <p>Enter your User ID and password to open the Monthly Dashboard and Truck Material Monitor.</p>
+    <input type="text" id="uid" placeholder="User ID" autocomplete="username" autocapitalize="none" spellcheck="false">
     <input type="password" id="pw" placeholder="Password" autocomplete="current-password" required>
     <label><input type="checkbox" id="remember" checked> Remember on this phone</label>
     <button type="submit" id="unlockBtn">Unlock</button>
@@ -112,13 +113,17 @@ nav button .dot.on{display:block}
 (function(){
 const TABS = {monthly:'FY 2026-27 Monthly Dashboard', truck:'Truck Material Monitor'};
 const CACHE = 'rdc-data-v1';
-const LS_PW = 'rdc_app_pw', LS_TAB = 'rdc_app_tab', LS_VER = 'rdc_app_ver';
+const LS_PW = 'rdc_app_pw', LS_TAB = 'rdc_app_tab', LS_UID = 'rdc_app_uid';
 const $ = id => document.getElementById(id);
 const ls = {get(k){try{return localStorage.getItem(k)}catch(e){return null}},
             set(k,v){try{localStorage.setItem(k,v)}catch(e){}},
             del(k){try{localStorage.removeItem(k)}catch(e){}}};
 
 let password = ls.get(LS_PW) || sessionStorage.getItem(LS_PW) || '';
+// blank User ID = full (all-region) data at the site root; area users live under u/<id>/
+let uid = ls.get(LS_UID) || sessionStorage.getItem(LS_UID) || '';
+const base = () => uid ? 'u/' + encodeURIComponent(uid) + '/' : '';
+const verKey = () => 'rdc_app_ver' + (uid ? ':' + uid : '');
 let current = ls.get(LS_TAB) in TABS ? ls.get(LS_TAB) : 'monthly';
 let version = null;              // latest version.json we know of
 let shown = {};                  // tab -> hash currently loaded in its iframe
@@ -147,14 +152,15 @@ async function decryptToHtml(buf, iter){
 
 // ---------- network / cache ----------
 async function fetchVersion(){
-  const r = await fetch('version.json?t=' + Date.now(), {cache:'no-store'});
+  const r = await fetch(base() + 'version.json?t=' + Date.now(), {cache:'no-store'});
+  if(r.status === 404){ const e = new Error('Unknown User ID'); e.uid = true; throw e; }
   if(!r.ok) throw new Error('version ' + r.status);
   const v = await r.json();
-  ls.set(LS_VER, JSON.stringify(v));
+  ls.set(verKey(), JSON.stringify(v));
   return v;
 }
 async function getData(tab, meta){
-  const url = 'data/' + tab + '.bin?v=' + meta.hash;
+  const url = base() + 'data/' + tab + '.bin?v=' + meta.hash;
   let cache = null;
   try{ cache = await caches.open(CACHE); }catch(e){}
   if(cache){
@@ -170,7 +176,8 @@ async function getData(tab, meta){
       await cache.put(url, new Response(buf.slice(0)));
       // drop older copies of this dashboard
       for(const req of await cache.keys()){
-        if(req.url.includes('/data/' + tab + '.bin') && !req.url.endsWith('v=' + meta.hash)) cache.delete(req);
+        const p = new URL(req.url).pathname;
+        if(p.endsWith('/' + base() + 'data/' + tab + '.bin') && !req.url.endsWith('v=' + meta.hash)) cache.delete(req);
       }
     }catch(e){ /* storage full or busy: still show the data, just not saved offline */ }
   }
@@ -185,7 +192,7 @@ function hideMsg(){ $('msg').classList.remove('on'); }
 function setSub(){
   const m = version && version.files[current];
   $('hTitle').textContent = TABS[current];
-  $('hSub').textContent = m ? 'Data updated ' + m.updated + (navigator.onLine ? '' : ' · offline') : (navigator.onLine ? '' : 'Offline');
+  $('hSub').textContent = m ? (version.label && uid ? version.label + ' · ' : '') + 'Updated ' + m.updated + (navigator.onLine ? '' : ' · offline') : (navigator.onLine ? '' : 'Offline');
 }
 function selectTab(tab){
   current = tab; ls.set(LS_TAB, tab);
@@ -249,12 +256,16 @@ function applyPending(){
   selectTab(current);
 }
 function forget(){ password = ''; keyCache = {}; ls.del(LS_PW); sessionStorage.removeItem(LS_PW); }
-function showLock(err){ $('lock').classList.add('on'); $('lockErr').textContent = err || ''; setTimeout(()=>$('pw').focus(), 50); }
+function forgetUser(){ forget(); uid = ''; ls.del(LS_UID); sessionStorage.removeItem(LS_UID); }
+function showLock(err){ $('lock').classList.add('on'); $('lockErr').textContent = err || ''; $('uid').value = uid; setTimeout(()=>$(uid ? 'pw' : 'uid').focus(), 50); }
 
 $('lockForm').addEventListener('submit', async ev => {
   ev.preventDefault();
   password = $('pw').value;
-  if($('remember').checked) ls.set(LS_PW, password); else sessionStorage.setItem(LS_PW, password);
+  uid = $('uid').value.trim().toLowerCase();
+  const st = $('remember').checked ? ls : {set:(k,v)=>sessionStorage.setItem(k,v)};
+  st.set(LS_PW, password); st.set(LS_UID, uid);
+  shown = {}; version = null;
   $('pw').value = '';
   $('lock').classList.remove('on');
   start();
@@ -268,6 +279,7 @@ $('btnInfo').addEventListener('click', () => {
     const m = version && version.files[t];
     rows.push('<div class="row"><span>' + TABS[t] + '</span><span>' + (m ? 'Updated ' + m.updated + '<br>' + (m.size/1048576).toFixed(1) + ' MB' + (shown[t] ? ' · loaded' : '') : '—') + '</span></div>');
   }
+  rows.push('<div class="row"><span>Access</span><span>' + (uid ? (version && version.label || uid) + '<br>User ID: ' + uid : 'All regions') + '</span></div>');
   rows.push('<div class="row"><span>Last published</span><span>' + (version ? version.built : '—') + '</span></div>');
   rows.push('<div class="row"><span>Connection</span><span>' + (navigator.onLine ? 'Online' : 'Offline') + '</span></div>');
   $('infoRows').innerHTML = rows.join('');
@@ -275,7 +287,7 @@ $('btnInfo').addEventListener('click', () => {
 });
 $('btnClose').addEventListener('click', () => $('info').classList.remove('on'));
 $('info').addEventListener('click', e => { if(e.target.id === 'info') $('info').classList.remove('on'); });
-$('btnLock').addEventListener('click', () => { forget(); location.reload(); });
+$('btnLock').addEventListener('click', () => { forgetUser(); location.reload(); });
 document.addEventListener('visibilitychange', () => { if(document.visibilityState === 'visible' && password) checkForUpdates(false); });
 window.addEventListener('online', () => checkForUpdates(false));
 window.addEventListener('offline', setSub);
@@ -283,7 +295,10 @@ window.addEventListener('offline', setSub);
 async function start(){
   setMsg('Checking for latest data…', true);
   try{ version = await fetchVersion(); }
-  catch(e){ try{ version = JSON.parse(ls.get(LS_VER)); }catch(_){ version = null; } }
+  catch(e){
+    if(e.uid){ forgetUser(); hideMsg(); showLock('Unknown User ID — please check and re-enter.'); return; }
+    try{ version = JSON.parse(ls.get(verKey())); }catch(_){ version = null; }
+  }
   selectTab(current);
 }
 
