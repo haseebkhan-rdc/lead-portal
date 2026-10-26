@@ -1,5 +1,5 @@
 {
- "built": "26-Oct-2026 16:56",
+ "built": "26-Oct-2026 17:05",
  "iter": 200000,
  "label": "All regions",
  "files": {
@@ -11,9 +11,9 @@
   },
   "truck": {
    "title": "Truck Material Monitor",
-   "hash": "407ba77cd4bd2138",
-   "updated": "26-Oct-2026 16:56",
-   "size": 1807640
+   "hash": "70981e6b3bd60df6",
+   "updated": "26-Oct-2026 17:04",
+   "size": 1808774
   }
  }
 }
