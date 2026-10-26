@@ -1,19 +1,19 @@
 {
- "built": "26-Oct-2026 11:32",
+ "built": "26-Oct-2026 15:17",
  "iter": 200000,
  "label": "Priyank Shukla - Uttar Pradesh",
  "files": {
   "monthly": {
    "title": "FY 2026-27 Monthly Dashboard",
    "hash": "4e2939abd670989c",
-   "updated": "26-Oct-2026 10:41",
+   "updated": "26-Oct-2026 11:57",
    "size": 72765
   },
   "truck": {
    "title": "Truck Material Monitor",
-   "hash": "3b50dd5ef308a314",
-   "updated": "26-Oct-2026 10:38",
-   "size": 327448
+   "hash": "cbc576a542251896",
+   "updated": "26-Oct-2026 15:16",
+   "size": 330098
   }
  }
 }
