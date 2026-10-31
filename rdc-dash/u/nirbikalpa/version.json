@@ -1,13 +1,13 @@
 {
- "built": "31-Oct-2026 13:33",
+ "built": "31-Oct-2026 13:41",
  "iter": 200000,
  "label": "Nirbikalpa Sahoo - Chhattisgarh",
  "files": {
   "monthly": {
    "title": "FY 2026-27 Monthly Dashboard",
-   "hash": "53c0125521f99a6a",
-   "updated": "29-Oct-2026 14:28",
-   "size": 65973
+   "hash": "9f279e52ec149250",
+   "updated": "31-Oct-2026 13:40",
+   "size": 66008
   },
   "truck": {
    "title": "Truck Material Monitor",
