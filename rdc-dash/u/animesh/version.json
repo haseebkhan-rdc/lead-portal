@@ -1,19 +1,19 @@
 {
- "built": "02-Nov-2026 11:26",
+ "built": "02-Nov-2026 13:15",
  "iter": 200000,
  "label": "Animesh Sharma - Madhya Pradesh",
  "files": {
   "monthly": {
    "title": "FY 2026-27 Monthly Dashboard",
    "hash": "a01016c3d17d359b",
-   "updated": "02-Nov-2026 11:25",
+   "updated": "02-Nov-2026 11:42",
    "size": 97931
   },
   "truck": {
    "title": "Truck Material Monitor",
-   "hash": "305cb23e18d349c9",
-   "updated": "02-Nov-2026 11:03",
-   "size": 385118
+   "hash": "fc05faba92f21ca0",
+   "updated": "02-Nov-2026 13:15",
+   "size": 385532
   }
  }
 }
