@@ -1,19 +1,19 @@
 {
- "built": "02-Nov-2026 13:36",
+ "built": "02-Nov-2026 14:09",
  "iter": 200000,
  "label": "Gaurav Tiwari - Mumbai (MMR)",
  "files": {
   "monthly": {
    "title": "FY 2026-27 Monthly Dashboard",
-   "hash": "5f7ac3a22e0bc615",
-   "updated": "02-Nov-2026 11:42",
-   "size": 256200
+   "hash": "27f2cd95b779c2e2",
+   "updated": "02-Nov-2026 14:08",
+   "size": 255145
   },
   "truck": {
    "title": "Truck Material Monitor",
-   "hash": "6362d161657930c6",
-   "updated": "02-Nov-2026 13:35",
-   "size": 1062708
+   "hash": "3dfb0a39e270973d",
+   "updated": "02-Nov-2026 14:08",
+   "size": 1063973
   }
  }
 }
