@@ -1,5 +1,5 @@
 {
- "built": "02-Nov-2026 13:25",
+ "built": "02-Nov-2026 13:36",
  "iter": 200000,
  "label": "Pooja Das - Maharashtra (Rest)",
  "files": {
@@ -11,9 +11,9 @@
   },
   "truck": {
    "title": "Truck Material Monitor",
-   "hash": "e4226a868edc59bb",
-   "updated": "02-Nov-2026 13:25",
-   "size": 303830
+   "hash": "7f4d7d1346d3f66f",
+   "updated": "02-Nov-2026 13:35",
+   "size": 303961
   }
  }
 }
