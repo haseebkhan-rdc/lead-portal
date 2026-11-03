@@ -1,5 +1,5 @@
 {
- "built": "02-Nov-2026 14:12",
+ "built": "03-Nov-2026 16:04",
  "iter": 200000,
  "label": "Amir Ansari - Gujarat",
  "files": {
@@ -11,9 +11,9 @@
   },
   "truck": {
    "title": "Truck Material Monitor",
-   "hash": "2f76895c953ef899",
-   "updated": "02-Nov-2026 14:11",
-   "size": 314269
+   "hash": "983949c9df6b7c18",
+   "updated": "03-Nov-2026 16:03",
+   "size": 314804
   }
  }
 }
