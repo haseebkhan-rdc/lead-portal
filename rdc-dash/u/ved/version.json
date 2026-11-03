@@ -1,13 +1,13 @@
 {
- "built": "03-Nov-2026 16:04",
+ "built": "03-Nov-2026 16:05",
  "iter": 200000,
  "label": "Ved Verma - Gujarat",
  "files": {
   "monthly": {
    "title": "FY 2026-27 Monthly Dashboard",
-   "hash": "10fd753b8c717a85",
-   "updated": "02-Nov-2026 14:09",
-   "size": 91740
+   "hash": "3e703a7084f84db6",
+   "updated": "03-Nov-2026 16:04",
+   "size": 92290
   },
   "truck": {
    "title": "Truck Material Monitor",
