@@ -1,5 +1,5 @@
 {
- "built": "03-Nov-2026 16:05",
+ "built": "05-Nov-2026 15:59",
  "iter": 200000,
  "label": "Nirbikalpa Sahoo - Chhattisgarh",
  "files": {
@@ -11,9 +11,9 @@
   },
   "truck": {
    "title": "Truck Material Monitor",
-   "hash": "f1d50a9a7d9bedab",
-   "updated": "03-Nov-2026 16:03",
-   "size": 339159
+   "hash": "efb78e2b299be8f0",
+   "updated": "05-Nov-2026 15:58",
+   "size": 342865
   }
  }
 }
