@@ -1,13 +1,13 @@
 {
- "built": "05-Nov-2026 15:58",
+ "built": "05-Nov-2026 16:06",
  "iter": 200000,
  "label": "Awanit Kumar - Gujarat",
  "files": {
   "monthly": {
    "title": "FY 2026-27 Monthly Dashboard",
-   "hash": "b45f682c87b1d3fa",
-   "updated": "03-Nov-2026 16:04",
-   "size": 59569
+   "hash": "d003dc881032d043",
+   "updated": "05-Nov-2026 16:06",
+   "size": 59835
   },
   "truck": {
    "title": "Truck Material Monitor",
