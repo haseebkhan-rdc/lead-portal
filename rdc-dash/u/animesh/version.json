@@ -1,5 +1,5 @@
 {
- "built": "11-Nov-2026 20:53",
+ "built": "11-Nov-2026 20:58",
  "iter": 200000,
  "label": "Animesh Sharma - Madhya Pradesh",
  "files": {
@@ -11,9 +11,9 @@
   },
   "truck": {
    "title": "Truck Material Monitor",
-   "hash": "dd762ed7acfcb2cd",
-   "updated": "11-Nov-2026 10:57",
-   "size": 403411
+   "hash": "0c019f1d3eb3fe1b",
+   "updated": "11-Nov-2026 20:57",
+   "size": 404656
   }
  }
 }
