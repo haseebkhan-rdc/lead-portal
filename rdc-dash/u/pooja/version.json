@@ -1,19 +1,19 @@
 {
- "built": "05-Nov-2026 16:51",
+ "built": "11-Nov-2026 10:58",
  "iter": 200000,
  "label": "Pooja Das - Maharashtra (Rest)",
  "files": {
   "monthly": {
    "title": "FY 2026-27 Monthly Dashboard",
    "hash": "44358bff18062d04",
-   "updated": "05-Nov-2026 16:06",
+   "updated": "05-Nov-2026 18:12",
    "size": 58933
   },
   "truck": {
    "title": "Truck Material Monitor",
-   "hash": "0ef3086d2ab1faff",
-   "updated": "05-Nov-2026 16:50",
-   "size": 307585
+   "hash": "1161db61e55b92ef",
+   "updated": "11-Nov-2026 10:57",
+   "size": 308513
   }
  }
 }
