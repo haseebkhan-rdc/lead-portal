@@ -1,13 +1,13 @@
 {
- "built": "14-Nov-2026 10:06",
+ "built": "14-Nov-2026 10:55",
  "iter": 200000,
  "label": "Shyamanand Ghosh - Chhattisgarh",
  "files": {
   "monthly": {
    "title": "FY 2026-27 Monthly Dashboard",
-   "hash": "fa51f0afa56cbe84",
-   "updated": "14-Nov-2026 10:05",
-   "size": 54273
+   "hash": "b5563d42a8980441",
+   "updated": "14-Nov-2026 10:54",
+   "size": 54324
   },
   "truck": {
    "title": "Truck Material Monitor",
