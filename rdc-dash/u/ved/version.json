@@ -1,5 +1,5 @@
 {
- "built": "11-Nov-2026 20:57",
+ "built": "14-Nov-2026 10:01",
  "iter": 200000,
  "label": "Ved Verma - Gujarat",
  "files": {
@@ -11,9 +11,9 @@
   },
   "truck": {
    "title": "Truck Material Monitor",
-   "hash": "7e4d1c2907064cbf",
-   "updated": "11-Nov-2026 20:57",
-   "size": 562560
+   "hash": "24be63fdd1962b3c",
+   "updated": "14-Nov-2026 10:01",
+   "size": 569469
   }
  }
 }

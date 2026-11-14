@@ -1,5 +1,5 @@
 {
- "built": "11-Nov-2026 20:57",
+ "built": "14-Nov-2026 10:01",
  "iter": 200000,
  "label": "Manish Polampalli - Nagpur",
  "files": {
@@ -11,9 +11,9 @@
   },
   "truck": {
    "title": "Truck Material Monitor",
-   "hash": "60a3ed4552276c93",
-   "updated": "11-Nov-2026 20:57",
-   "size": 459155
+   "hash": "fb45b8458290d6a7",
+   "updated": "14-Nov-2026 10:01",
+   "size": 460123
   }
  }
 }

@@ -1,5 +1,5 @@
 {
- "built": "11-Nov-2026 20:58",
+ "built": "14-Nov-2026 10:02",
  "iter": 200000,
  "label": "Priyank Shukla - Uttar Pradesh",
  "files": {
@@ -11,9 +11,9 @@
   },
   "truck": {
    "title": "Truck Material Monitor",
-   "hash": "9f83361f8aefc629",
-   "updated": "11-Nov-2026 20:57",
-   "size": 345115
+   "hash": "1d35838660e35629",
+   "updated": "14-Nov-2026 10:01",
+   "size": 346584
   }
  }
 }
