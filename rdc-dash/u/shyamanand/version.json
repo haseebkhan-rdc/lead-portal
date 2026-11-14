@@ -1,5 +1,5 @@
 {
- "built": "14-Nov-2026 14:55",
+ "built": "14-Nov-2026 15:25",
  "iter": 200000,
  "label": "Shyamanand Ghosh - Chhattisgarh",
  "files": {
@@ -11,9 +11,9 @@
   },
   "truck": {
    "title": "Truck Material Monitor",
-   "hash": "0a47e92742f22d20",
-   "updated": "14-Nov-2026 14:54",
-   "size": 302206
+   "hash": "fde3570b69c2af21",
+   "updated": "14-Nov-2026 15:23",
+   "size": 354750
   }
  }
 }
