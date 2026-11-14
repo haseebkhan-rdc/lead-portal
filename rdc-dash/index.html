@@ -72,6 +72,7 @@ nav button .dot.on{display:block}
   <main>
     <iframe id="f-monthly" title="FY 2026-27 Monthly Dashboard"></iframe>
     <iframe id="f-truck" title="Truck Material Monitor"></iframe>
+    <iframe id="f-gm" title="Truck Gross Margin"></iframe>
     <div class="msg" id="msg"><div class="spin" id="spin"></div><div id="msgTxt">Loading…</div></div>
   </main>
   <nav>
@@ -82,6 +83,10 @@ nav button .dot.on{display:block}
     <button data-tab="truck">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 6h13v10H1zM14 10h4l4 3v3h-8"/><circle cx="5.5" cy="18" r="2"/><circle cx="17.5" cy="18" r="2"/></svg>
       Truck Monitor<i class="dot" id="dot-truck"></i>
+    </button>
+    <button data-tab="gm">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h12M6 8h12M14 21L6 8M6 8h3a5 5 0 0 0 0-5"/></svg>
+      Truck Gross Margin<i class="dot" id="dot-gm"></i>
     </button>
   </nav>
 </div>
@@ -111,7 +116,10 @@ nav button .dot.on{display:block}
 
 <script>
 (function(){
-const TABS = {monthly:'FY 2026-27 Monthly Dashboard', truck:'Truck Material Monitor'};
+const TABS = {monthly:'FY 2026-27 Monthly Dashboard', truck:'Truck Material Monitor', gm:'Truck Gross Margin'};
+// plain (unencrypted) pages loaded as-is from the site root, not part of version.json
+const STATIC = {gm:'truck-gm.html'};
+const ENC = Object.keys(TABS).filter(t => !(t in STATIC));
 const CACHE = 'rdc-data-v1';
 const LS_PW = 'rdc_app_pw', LS_TAB = 'rdc_app_tab', LS_UID = 'rdc_app_uid';
 const $ = id => document.getElementById(id);
@@ -192,7 +200,8 @@ function hideMsg(){ $('msg').classList.remove('on'); }
 function setSub(){
   const m = version && version.files[current];
   $('hTitle').textContent = TABS[current];
-  $('hSub').textContent = m ? (version.label && uid ? version.label + ' · ' : '') + 'Updated ' + m.updated + (navigator.onLine ? '' : ' · offline') : (navigator.onLine ? '' : 'Offline');
+  if(current in STATIC){ $('hSub').textContent = navigator.onLine ? '' : 'Offline'; return; }
+  $('hSub').textContent = m ?(version.label && uid ? version.label + ' · ' : '') + 'Updated ' + m.updated + (navigator.onLine ? '' : ' · offline') : (navigator.onLine ? '' : 'Offline');
 }
 function selectTab(tab){
   current = tab; ls.set(LS_TAB, tab);
@@ -203,6 +212,14 @@ function selectTab(tab){
   else hideMsg();
 }
 async function loadTab(tab){
+  if(tab in STATIC){
+    if(current === tab) setMsg('Opening ' + TABS[tab] + '…', true);
+    const f = $('f-' + tab);
+    if(f.getAttribute('src')) return;   // already loading; onload will reveal it
+    f.onload = () => { shown[tab] = 'static'; if(current === tab){ f.classList.add('on'); hideMsg(); } };
+    f.src = STATIC[tab];
+    return;
+  }
   if(!version){ setMsg('No data yet. Connect to the internet and tap ↻.', false); return; }
   const meta = version.files[tab];
   try{
@@ -222,7 +239,7 @@ async function loadTab(tab){
 }
 function markUpdates(v){
   let any = false;
-  for(const t in TABS){
+  for(const t of ENC){
     const isNew = shown[t] && v.files[t] && shown[t] !== v.files[t].hash;
     $('dot-' + t).classList.toggle('on', !!isNew);
     any = any || isNew;
@@ -237,7 +254,7 @@ async function checkForUpdates(manual){
   if(!version){ version = v; setSub(); return; }
   if(markUpdates(v)){
     pending = v;
-    const names = Object.keys(TABS).filter(t => shown[t] && shown[t] !== v.files[t].hash).map(t => t === 'monthly' ? 'Monthly' : 'Truck Monitor');
+    const names = ENC.filter(t => shown[t] && shown[t] !== v.files[t].hash).map(t => t === 'monthly' ? 'Monthly' : 'Truck Monitor');
     $('bannerTxt').textContent = 'New data for ' + names.join(' & ') + ' is available.';
     $('banner').classList.add('on');
     setSub();
@@ -245,14 +262,14 @@ async function checkForUpdates(manual){
     version = v;
     // tabs not yet opened just pick up the new version silently
     setSub();
-    if(manual) $('hSub').textContent = 'Up to date · data ' + v.files[current].updated;
+    if(manual) $('hSub').textContent = current in STATIC ? 'Up to date' : 'Up to date · data ' + v.files[current].updated;
   }
 }
 function applyPending(){
   if(!pending) return;
   version = pending; pending = null;
   $('banner').classList.remove('on');
-  for(const t in TABS){ if(shown[t] && shown[t] !== version.files[t].hash){ shown[t] = null; $('f-' + t).classList.remove('on'); } }
+  for(const t of ENC){ if(shown[t] && shown[t] !== version.files[t].hash){ shown[t] = null; $('f-' + t).classList.remove('on'); } }
   selectTab(current);
 }
 function forget(){ password = ''; keyCache = {}; ls.del(LS_PW); sessionStorage.removeItem(LS_PW); }
@@ -275,7 +292,7 @@ $('btnRefresh').addEventListener('click', () => pending ? applyPending() : check
 $('bannerBtn').addEventListener('click', applyPending);
 $('btnInfo').addEventListener('click', () => {
   const rows = [];
-  for(const t in TABS){
+  for(const t of ENC){
     const m = version && version.files[t];
     rows.push('<div class="row"><span>' + TABS[t] + '</span><span>' + (m ? 'Updated ' + m.updated + '<br>' + (m.size/1048576).toFixed(1) + ' MB' + (shown[t] ? ' · loaded' : '') : '—') + '</span></div>');
   }
