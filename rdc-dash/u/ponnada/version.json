@@ -1,13 +1,13 @@
 {
- "built": "14-Nov-2026 10:05",
+ "built": "14-Nov-2026 10:06",
  "iter": 200000,
  "label": "Ponnada Sri Hari Krishna - Goa",
  "files": {
   "monthly": {
    "title": "FY 2026-27 Monthly Dashboard",
-   "hash": "d9e226b6ca5b78e7",
+   "hash": "cc2d9adfe6694059",
    "updated": "14-Nov-2026 10:05",
-   "size": 78551
+   "size": 78622
   },
   "truck": {
    "title": "Truck Material Monitor",
