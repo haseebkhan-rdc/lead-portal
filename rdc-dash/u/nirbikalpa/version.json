@@ -1,5 +1,5 @@
 {
- "built": "14-Nov-2026 15:25",
+ "built": "14-Nov-2026 16:00",
  "iter": 200000,
  "label": "Nirbikalpa Sahoo - Chhattisgarh",
  "files": {
@@ -14,6 +14,12 @@
    "hash": "807c864218ee891c",
    "updated": "14-Nov-2026 15:23",
    "size": 472791
+  },
+  "gm": {
+   "title": "Truck Gross Margin",
+   "hash": "78b15cb3bb4329fb",
+   "updated": "14-Nov-2026 15:25",
+   "size": 56610
   }
  }
 }

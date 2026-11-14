@@ -1,5 +1,5 @@
 {
- "built": "14-Nov-2026 15:25",
+ "built": "14-Nov-2026 16:00",
  "iter": 200000,
  "label": "Shyamanand Ghosh - Chhattisgarh",
  "files": {
@@ -14,6 +14,12 @@
    "hash": "fde3570b69c2af21",
    "updated": "14-Nov-2026 15:23",
    "size": 354750
+  },
+  "gm": {
+   "title": "Truck Gross Margin",
+   "hash": "0f52bd1c677d1ce1",
+   "updated": "14-Nov-2026 15:25",
+   "size": 35827
   }
  }
 }

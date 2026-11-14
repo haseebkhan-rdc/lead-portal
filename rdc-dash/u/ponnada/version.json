@@ -1,5 +1,5 @@
 {
- "built": "14-Nov-2026 15:25",
+ "built": "14-Nov-2026 15:59",
  "iter": 200000,
  "label": "Ponnada Sri Hari Krishna - Goa",
  "files": {
@@ -14,6 +14,12 @@
    "hash": "681bc41d6aa828ba",
    "updated": "14-Nov-2026 15:23",
    "size": 531215
+  },
+  "gm": {
+   "title": "Truck Gross Margin",
+   "hash": "e3a2a7afa85aceae",
+   "updated": "14-Nov-2026 15:25",
+   "size": 90870
   }
  }
 }

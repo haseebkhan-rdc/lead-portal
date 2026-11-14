@@ -1,5 +1,5 @@
 {
- "built": "14-Nov-2026 15:24",
+ "built": "14-Nov-2026 15:59",
  "iter": 200000,
  "label": "Ved Verma - Gujarat",
  "files": {
@@ -14,6 +14,12 @@
    "hash": "1e98211dde9727e7",
    "updated": "14-Nov-2026 15:23",
    "size": 1158924
+  },
+  "gm": {
+   "title": "Truck Gross Margin",
+   "hash": "258bdbb0a16dd8e6",
+   "updated": "14-Nov-2026 15:25",
+   "size": 184142
   }
  }
 }

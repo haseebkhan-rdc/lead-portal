@@ -94,7 +94,7 @@ nav button .dot.on{display:block}
 <div id="lock">
   <form id="lockForm" autocomplete="off">
     <h1>RDC Dashboards</h1>
-    <p>Enter your User ID and password to open the Monthly Dashboard and Truck Material Monitor.</p>
+    <p>Enter your User ID and password to open the Monthly Dashboard, Truck Material Monitor and Truck Gross Margin.</p>
     <input type="text" id="uid" placeholder="User ID" autocomplete="username" autocapitalize="none" spellcheck="false">
     <input type="password" id="pw" placeholder="Password" autocomplete="current-password" required>
     <label><input type="checkbox" id="remember" checked> Remember on this phone</label>
@@ -117,9 +117,8 @@ nav button .dot.on{display:block}
 <script>
 (function(){
 const TABS = {monthly:'FY 2026-27 Monthly Dashboard', truck:'Truck Material Monitor', gm:'Truck Gross Margin'};
-// plain (unencrypted) pages loaded as-is from the site root, not part of version.json
-const STATIC = {gm:'truck-gm.html'};
-const ENC = Object.keys(TABS).filter(t => !(t in STATIC));
+const SHORT = {monthly:'Monthly', truck:'Truck Monitor', gm:'Truck Gross Margin'};
+const ENC = Object.keys(TABS);
 const CACHE = 'rdc-data-v1';
 const LS_PW = 'rdc_app_pw', LS_TAB = 'rdc_app_tab', LS_UID = 'rdc_app_uid';
 const $ = id => document.getElementById(id);
@@ -200,7 +199,6 @@ function hideMsg(){ $('msg').classList.remove('on'); }
 function setSub(){
   const m = version && version.files[current];
   $('hTitle').textContent = TABS[current];
-  if(current in STATIC){ $('hSub').textContent = navigator.onLine ? '' : 'Offline'; return; }
   $('hSub').textContent = m ?(version.label && uid ? version.label + ' · ' : '') + 'Updated ' + m.updated + (navigator.onLine ? '' : ' · offline') : (navigator.onLine ? '' : 'Offline');
 }
 function selectTab(tab){
@@ -212,16 +210,9 @@ function selectTab(tab){
   else hideMsg();
 }
 async function loadTab(tab){
-  if(tab in STATIC){
-    if(current === tab) setMsg('Opening ' + TABS[tab] + '…', true);
-    const f = $('f-' + tab);
-    if(f.getAttribute('src')) return;   // already loading; onload will reveal it
-    f.onload = () => { shown[tab] = 'static'; if(current === tab){ f.classList.add('on'); hideMsg(); } };
-    f.src = STATIC[tab];
-    return;
-  }
   if(!version){ setMsg('No data yet. Connect to the internet and tap ↻.', false); return; }
   const meta = version.files[tab];
+  if(!meta){ setMsg('This dashboard is not published yet. Tap ↻ to check again.', false); return; }
   try{
     const buf = await getData(tab, meta);
     if(current === tab) setMsg('Opening ' + TABS[tab] + '…', true);
@@ -240,7 +231,7 @@ async function loadTab(tab){
 function markUpdates(v){
   let any = false;
   for(const t of ENC){
-    const isNew = shown[t] && v.files[t] && shown[t] !== v.files[t].hash;
+    const isNew = !!(shown[t] && v.files[t] && shown[t] !== v.files[t].hash);
     $('dot-' + t).classList.toggle('on', !!isNew);
     any = any || isNew;
   }
@@ -254,7 +245,7 @@ async function checkForUpdates(manual){
   if(!version){ version = v; setSub(); return; }
   if(markUpdates(v)){
     pending = v;
-    const names = ENC.filter(t => shown[t] && shown[t] !== v.files[t].hash).map(t => t === 'monthly' ? 'Monthly' : 'Truck Monitor');
+    const names = ENC.filter(t => shown[t] && v.files[t] && shown[t] !== v.files[t].hash).map(t => SHORT[t]);
     $('bannerTxt').textContent = 'New data for ' + names.join(' & ') + ' is available.';
     $('banner').classList.add('on');
     setSub();
@@ -262,14 +253,14 @@ async function checkForUpdates(manual){
     version = v;
     // tabs not yet opened just pick up the new version silently
     setSub();
-    if(manual) $('hSub').textContent = current in STATIC ? 'Up to date' : 'Up to date · data ' + v.files[current].updated;
+    if(manual) $('hSub').textContent = 'Up to date' + (v.files[current] ? ' · data ' + v.files[current].updated : '');
   }
 }
 function applyPending(){
   if(!pending) return;
   version = pending; pending = null;
   $('banner').classList.remove('on');
-  for(const t of ENC){ if(shown[t] && shown[t] !== version.files[t].hash){ shown[t] = null; $('f-' + t).classList.remove('on'); } }
+  for(const t of ENC){ if(shown[t] && version.files[t] && shown[t] !== version.files[t].hash){ shown[t] = null; $('f-' + t).classList.remove('on'); } }
   selectTab(current);
 }
 function forget(){ password = ''; keyCache = {}; ls.del(LS_PW); sessionStorage.removeItem(LS_PW); }
