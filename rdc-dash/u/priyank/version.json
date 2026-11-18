@@ -1,5 +1,5 @@
 {
- "built": "14-Nov-2026 16:00",
+ "built": "18-Nov-2026 13:25",
  "iter": 200000,
  "label": "Priyank Shukla - Uttar Pradesh",
  "files": {
@@ -11,9 +11,9 @@
   },
   "truck": {
    "title": "Truck Material Monitor",
-   "hash": "8d4dccdb25d4e3ab",
-   "updated": "14-Nov-2026 15:23",
-   "size": 492984
+   "hash": "253aa794efc15c0d",
+   "updated": "18-Nov-2026 13:24",
+   "size": 495685
   },
   "gm": {
    "title": "Truck Gross Margin",
