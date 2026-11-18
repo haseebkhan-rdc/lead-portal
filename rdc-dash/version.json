@@ -1,5 +1,5 @@
 {
- "built": "18-Nov-2026 13:29",
+ "built": "18-Nov-2026 16:06",
  "iter": 200000,
  "label": "All regions",
  "files": {
@@ -17,9 +17,9 @@
   },
   "gm": {
    "title": "Truck Gross Margin",
-   "hash": "76e38dc652bc84b5",
+   "hash": "05c146969a439a3a",
    "updated": "14-Nov-2026 15:25",
-   "size": 1478171
+   "size": 1480139
   }
  }
 }
