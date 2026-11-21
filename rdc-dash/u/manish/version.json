@@ -1,13 +1,13 @@
 {
- "built": "21-Nov-2026 12:29",
+ "built": "21-Nov-2026 12:44",
  "iter": 200000,
  "label": "Manish Polampalli - Nagpur",
  "files": {
   "monthly": {
    "title": "FY 2026-27 Monthly Dashboard",
-   "hash": "94f4e94c5c503ad6",
-   "updated": "21-Nov-2026 12:25",
-   "size": 107772
+   "hash": "a4f61dd62390777f",
+   "updated": "21-Nov-2026 12:43",
+   "size": 107973
   },
   "truck": {
    "title": "Truck Material Monitor",
