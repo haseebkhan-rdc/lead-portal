@@ -1,5 +1,5 @@
 {
- "built": "21-Nov-2026 12:44",
+ "built": "21-Nov-2026 12:46",
  "iter": 200000,
  "label": "Pooja Das - Maharashtra (Rest)",
  "files": {
@@ -11,9 +11,9 @@
   },
   "truck": {
    "title": "Truck Material Monitor",
-   "hash": "f5942a5976b54dc5",
-   "updated": "21-Nov-2026 12:28",
-   "size": 383590
+   "hash": "3029eae1e9664fa2",
+   "updated": "21-Nov-2026 12:44",
+   "size": 383764
   },
   "gm": {
    "title": "Truck Gross Margin",

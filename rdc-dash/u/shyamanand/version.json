@@ -1,5 +1,5 @@
 {
- "built": "21-Nov-2026 12:45",
+ "built": "21-Nov-2026 12:46",
  "iter": 200000,
  "label": "Shyamanand Ghosh - Chhattisgarh",
  "files": {
@@ -11,9 +11,9 @@
   },
   "truck": {
    "title": "Truck Material Monitor",
-   "hash": "fde3570b69c2af21",
-   "updated": "21-Nov-2026 12:28",
-   "size": 354750
+   "hash": "be36b4747f1d95ba",
+   "updated": "21-Nov-2026 12:44",
+   "size": 354925
   },
   "gm": {
    "title": "Truck Gross Margin",
