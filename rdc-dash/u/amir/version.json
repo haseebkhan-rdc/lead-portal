@@ -1,13 +1,13 @@
 {
- "built": "18-Nov-2026 16:07",
+ "built": "21-Nov-2026 12:26",
  "iter": 200000,
  "label": "Amir Ansari - Gujarat",
  "files": {
   "monthly": {
    "title": "FY 2026-27 Monthly Dashboard",
-   "hash": "6cabfe0af5ab621c",
-   "updated": "18-Nov-2026 13:28",
-   "size": 57532
+   "hash": "56a246fc8ef04422",
+   "updated": "21-Nov-2026 12:25",
+   "size": 57653
   },
   "truck": {
    "title": "Truck Material Monitor",
