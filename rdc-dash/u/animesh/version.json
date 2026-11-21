@@ -1,5 +1,5 @@
 {
- "built": "21-Nov-2026 12:27",
+ "built": "21-Nov-2026 12:30",
  "iter": 200000,
  "label": "Animesh Sharma - Madhya Pradesh",
  "files": {
@@ -11,9 +11,9 @@
   },
   "truck": {
    "title": "Truck Material Monitor",
-   "hash": "29c3c49ea9cdc081",
-   "updated": "18-Nov-2026 13:24",
-   "size": 718679
+   "hash": "5cd2bc58491e41c1",
+   "updated": "21-Nov-2026 12:28",
+   "size": 722974
   },
   "gm": {
    "title": "Truck Gross Margin",

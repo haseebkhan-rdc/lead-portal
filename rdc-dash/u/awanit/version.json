@@ -1,5 +1,5 @@
 {
- "built": "21-Nov-2026 12:26",
+ "built": "21-Nov-2026 12:29",
  "iter": 200000,
  "label": "Awanit Kumar - Gujarat",
  "files": {
@@ -11,9 +11,9 @@
   },
   "truck": {
    "title": "Truck Material Monitor",
-   "hash": "7f8dfff63903d149",
-   "updated": "18-Nov-2026 13:24",
-   "size": 401932
+   "hash": "b99124824d1aba39",
+   "updated": "21-Nov-2026 12:28",
+   "size": 402857
   },
   "gm": {
    "title": "Truck Gross Margin",
